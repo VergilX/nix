@@ -1,0 +1,231 @@
+nix repl -> read-eval-print-loop  (for interactive practice)
+nix-instantiate --eval nixfilename (to eval a file)
+
+# Nix is :
+
+		* purely functional ->
+				- no seq of steps
+				- eval nix expr returns a single data struct
+				- nix file eval to a single expr
+
+		* lazy ->
+				- eval expr only when it is req
+
+# data types :
+
+		* numbers
+				17
+				3.14
+
+		* strings & paths
+				"yooooooo"
+				./dir1/subdir2/filename		(no quotations used)
+
+		* lists
+				[ 1 1 2 3 5 8 13 ]    (no commas for sep)
+
+		* attribute sets
+				{ gamename = "sotc"; director = "fumito ueda"; }
+
+
+# operators :
+		
+		* numeric op -> + - * /  (division is floor div)
+		* string cat -> +
+		* list cat -> ++
+		* compare -> the ussual
+		* logical implication e1 -> e2  (!e1 || e2)
+		
+		* merge op
+				{ day = "friday"; date = 3; month = "may"; } // { year = 2024; }
+	
+# var binding (immutable) :
+		let 
+		a = 1;
+		b = 2;
+		in a + b   => 3
+
+# builtins :
+		
+		* typeOf()
+		* isInt()   // isType()
+
+# functions (anon lambdas , ie treated like data) :
+
+		lambda functions
+		* (x: x * x) 5 => 25
+		* (x: y: x - y) 3 5 => -2
+		* (name: age: "${name} is ${toString age} years old") "nimil" 21
+		* funchello = (name: "hello ${name}"), funchello "nimil" => "hello nimil" 
+		* let                (the let in syntax)
+          mult = (a: b: a * b);
+          doubleit = (mult 2);
+          in
+          doubleit 8 => 16
+
+# multiple args (attr sets)
+		* ellipsis syntax
+		let 
+		func = { name, age, ...}: "${name} hello";         
+        person = { name = "nimil"; age = 20; email ="me@nimil.com";};
+        in 
+		func person
+		
+		* @ syntax
+		({a, b, ...}@args: args.b) {a = 5; b = 10; c = 15;} => 10
+
+# if then else
+		if 5 > 2
+        then "yup, it is the truth"
+        else "lies"
+
+# inherit
+		let x = 123; in
+		{
+		inherit x;
+		y = 456;
+		}                   => {x = 123; y= 456;}
+
+# with
+		let attrs = { a = 15; b = 2; };
+		in with attrs; a + b   => 17
+
+
+========================================================================================
+# data types
+        * String
+            - "I am a string"
+
+            - "\"I wanna see how good nix is\", said ${ name }"  -> string interpolation
+
+            - Multiline comment:
+              ''
+                I am here
+                and also here
+                but you don't know where I actually am
+              ''
+                *indentation is stripped automatically
+                
+            - " Characters escaping the prison: \n  \t  \r  \${  \" woof \" "
+            - ''
+                Multiline character escape
+
+                ''$  
+
+
+        * Path
+            - Must have at least one / to be considered a path
+            - ./../pixie/nix.nix -> Relative. *Converted to absolute when parsed*
+            - /packages/nix -> Absolute
+            - ~/Abhinand/code/nix -> /home/abhinand/Abhinand/code/nix
+            
+
+        * List
+            - [ 123 ./foo.nix "abc" (f { x = y; }) ] -> Func enclosed in () ==> 4 elements
+            - [ 123 ./foo.nix "abc" f { x = y; } ] ==> 5 elements
+
+        
+        * Attribute set ( there is no normal set )
+            - name -> string, identifier
+
+            - attrset = { [ name = expr ; ]... }
+            
+            - Accessed through .attr
+
+            - { a = "Foo"; b = "Bar"; }.c or "Xyzzy"  ==> "Xyzzy" is default value
+
+            - { "$!@#?" = 123; }."$!@#?" ==> Can use string as attr name
+
+            - let bar = "foo"; in
+              { foo = 123; }.${bar} ==> Supports string interpolation
+
+            - cannot store null. 
+              { ${if foo then "bar" else null} = true; } ==> {}
+
+
+# LANGUAGE CONSTRUCTS
+        * Recursive set
+            - rec {
+                x = y;
+                y = 123;      => 123
+              }.x
+
+            - Risk of infinite recursion
+
+        * let expr
+            - let
+              x = "nix ";
+              y = "not ";
+              z = "nixos";
+              in x+y+z
+
+        * inherit
+            - let
+              x = { a = 1; b = 2; };
+              inherit (builtins) attrNames;
+              in
+              {
+                names = attrNames x;
+              }
+
+
+        * lambda functions
+            - x: x+1
+
+            - (x: x+1) 1  ==> 2
+
+            - (x: y: z: x+y+z) "nix " "vs " "arch"
+
+        
+        * Compound arg func
+            - concat = x: y: x+y
+              map (concat "foo") [ "bar" "bla" "abc" ]  ==> [ "foobar" "foobla" "fooabc" ]
+
+            - func = { a, b, c }: "${toString a}x^2 + ${toString b}x + ${toString c}"
+              func { a=1; b=2; c=3; } => "1x^2 + 2x + 3"
+
+            - infinite args (ellipsis)
+              func = { a, b, c, ... }: "${toString a}x^2 + ${toString b}x + ${toString c}"
+              func { a=1; b=2; c=3; d=4; e=5; } => "1x^2 + 2x + 3"
+
+            - default args
+              func = { user ? "root", password ? "you think I'm dumb?", ... }: "current user: ${user}, password: ${password}"
+              func { user="abhinand"; }
+
+            - @ notation (sensible paired with ellipsis)
+              func = args@{ x, y, z, ... }: x+y+z+args.a
+                            OR
+              func = { x, y, z, ... } @ args: x+y+z+args.a
+
+        
+        * if then else
+            if e1 then e2 else e3  (e* should eval to boolean)
+
+        
+        * assert
+            assert e1; e2  -> if e1==true, e2 is returned
+                              else backtrace
+
+
+        * with
+            - with e1; e2 ==> introduces e1 into lexical scope of e2
+
+            - let as = { x = "foo"; y = "bar"; }; 
+              in with as; x + y
+
+            - best use case:
+              with (import ./definitions.nix); ...
+
+
+
+
+
+
+
+
+
+
+
+references: 
+- Nix documentation(https://nixos.org/manual/nix/stable/language/)
+- gei documentation(https://github.com/nimilgp/learning-nix/blob/main/notes)

@@ -1,0 +1,11 @@
+NIX STORE ARCHITECTURE:
+
+        Nix Store ---> Store directory --- (if it can be accessed by filesystem; accessed via store path) ---> Store object --- Filesystem object(data)
+                                                                                                                            |_ Store paths (to other packages)
+
+                                                                                                                            
+STORE PATH STRUCTURE:
+
+  /nix/store/b6gvzjyb2pg0kjfwrjmg1vfhh54ad73z-firefox-33.1
+  |--------| |------------------------------| |----------|
+store directory            digest                 name
