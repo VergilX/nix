@@ -217,8 +217,57 @@ nix-instantiate --eval nixfilename (to eval a file)
               with (import ./definitions.nix); ...
 
 
+# STRING INRERPOLATION
+        * Nested interpolation
+            - ./. + "/" + foo + "-" + bar + ".nix"     OR     ./. + "/${foo}-${bar}.nix"      OR     ./${foo}-${bar}.nix
+
+            - attr keys and values can have interpolated names
+                let
+                id="001e";
+                rank=3;
+                in
+                {
+                    ${id} = "Cristoph";     => "001e"="Cristoph";
+                    position = rank;
+                }
+
+                let name = "foo"; in
+                { foo = 123; }.${name}
 
 
+        * Interpolated expression
+            - Interpolated expression should evaluate to:
+                = a string
+                = a path
+                = an attribute set which has following attr:
+                    -> __toString: lambda func that takes itself as attr and returns string
+                    -> outPath: string
+                    ( This includes derivations and flake inputs)
+
+
+            - "${./foo}" -> adds store object to nix store
+
+            - Attr set interpolated value returns to value of __toString attr
+                let 
+                person = {
+                        name = "BingChiling";
+                        __toString = self: "Yo. Da name's ${self.name}";
+                };
+                in
+                "${person}"                                                 ==> "Yo. Da name's BingChiling"
+
+            - Same for outPath
+
+            - Precedence: __toString > outPath
+
+            - If neither is present, error is thrown
+
+
+# Lookup path (haven't understood this fully)
+        * Syntax:
+            lookup-path = < identifier [/ identifier]... >
+
+        * <nixpkgs> --> /nix/var/nix/profiles/per-user/root/channels/nixpkgs
 
 
 
