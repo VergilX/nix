@@ -270,6 +270,40 @@ nix-instantiate --eval nixfilename (to eval a file)
         * <nixpkgs> --> /nix/var/nix/profiles/per-user/root/channels/nixpkgs
 
 
+# Operators
+        * Has attribute: check if attr set has attr
+            attrset ? attr
+
+            { name = "Ichigo"; } ? name  => true
+
+        * Path concatenation: path + path
+
+        * String and path concatenation: "./home" + ./abhinand (and vice versa) ==> only works if path exists
+
+        * Update: attrset1 // attrset2 : updates value in attrset1 with attrset2
+            nix-repl> let
+                      old_data = {
+                          name="Abhinand";
+                          age=20;
+                      };
+                      new_data = {
+                          age=21;
+                          sex="M";
+                      };
+                      in
+                      old_data // new_data
+
+            Output:
+            {
+              age = 21;
+              name = "Abhinand";
+              sex = "M";
+            }
+        
+        * Logical implication: bool -> bool
+            b1 -> b2 ==> !b1 || b2
+
+
 
 
 

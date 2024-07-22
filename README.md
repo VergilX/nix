@@ -12,6 +12,10 @@ Sources:
 ![nix-donalds](https://github.com/gytis-ivaskevicius/high-quality-nix-content/raw/master/memes/debian-and-arch-bad.png)  
 
 
+### Resources
+
+- [nix.dev](https://nix.dev/tutorials/#tutorials)
+
 ### Brainwashers
 
 The reason I'm starting this is because of a few "brainwashers".  

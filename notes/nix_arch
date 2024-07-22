@@ -9,3 +9,18 @@ STORE PATH STRUCTURE:
   /nix/store/b6gvzjyb2pg0kjfwrjmg1vfhh54ad73z-firefox-33.1
   |--------| |------------------------------| |----------|
 store directory            digest                 name
+
+STORE DERIVATION:
+    - A .drv file produced as an output of instantiation
+
+
+BUILD PROCESS:
+
+-> Create TMPDIR (default /tmp); mkdir TMPDIR
+-> Env cleared, set to to derivation
+-> 
+
+
+NIX BUILD PROCESS:
+
+-> 

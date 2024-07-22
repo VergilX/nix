@@ -1,0 +1,3 @@
+nix repl -> interpreter-type prompt
+
+nix-shell --delete -> delete store object from nix store
