@@ -3,10 +3,10 @@
 {
   services.xserver = {
     enable = true;
-    videoDrivers = [ "modesetting" "nvidia" ];
+    # videoDrivers = [ "modesetting" ];  # Disable NVIDIA
+    videoDrivers = [ "modesetting" "nvidia" ];  # Enable NVIDIA
 
     # Disable display manager
-    autorun = true;
     displayManager.startx.enable = true;
 
     # Window Manager
@@ -26,14 +26,15 @@
 
   # Auto-login
   services.displayManager.defaultSession = "none+i3";
+  services.getty.autologinUser = "abhinand";
 
   # Touchpad and Mouse
   services.libinput.enable = true;
-  services.libinput.touchpad.naturalScrolling = true;
+  services.xserver.libinput.naturalScrolling = true;
   services.libinput.mouse.naturalScrolling = true;
 
   # Vulkan
-  hardware.opengl.driSupport = true;
+  # hardware.opengl.driSupport = true;
 
   # Picom
   services.picom.enable = true;

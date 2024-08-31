@@ -5,4 +5,9 @@
 
   # SSH
   services.openssh.enable = true;
+
+  # Global
+  environment.systemPackages = with pkgs; [
+    inetutils
+  ];
 }

@@ -52,21 +52,7 @@
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.abhinand = {
-    isNormalUser = true;
-    description = "Abhinand D Manoj";
-    extraGroups = [ "networkmanager" "wheel" "audio" ];
-    packages = with pkgs; [
-      kitty
-      gnome.nautilus
-      pv
-      flex
-      yacc
-      steam
-      nitrogen
-      flameshot
-    ];
-  };
+  # user `abhinand` in abhinand/programs.nix
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -85,9 +71,10 @@
     nnn
     xclip
     pv
-    android-file-transfer
     acpi
     jmtpfs
+
+    python3
   ];
 
   # Environemnt variables
@@ -101,6 +88,7 @@
 
   # Sound
   hardware.pulseaudio.enable = true;
+  hardware.pulseaudio.extraConfig = "load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1";
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
